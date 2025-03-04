@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Voice Assistant ✨</h1>
+        <div id="status">Click the button and speak!</div>
+        <button id="start-btn">🎙️ Start Listening</button>
+        <div id="response"></div>
+        <div class="log-container">
+            <h2>Conversation History</h2>
+            <pre id="log">{{ log }}</pre>
+        </div>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const status = document.getElementById('status');
+        const responseDiv = document.getElementById('response');
+        const logDiv = document.getElementById('log');
+
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const synth = window.speechSynthesis;
+
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+
+        startBtn.addEventListener('click', () => {
+            recognition.start();
+            status.textContent = 'Listening...';
+            startBtn.disabled = true;
+        });
+
+        recognition.onresult = (event) => {
+            const query = event.results[0][0].transcript;
+            status.textContent = `You said: ${query}`;
+            fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const response = data.response;
+                responseDiv.textContent = response;
+                const utterance = new SpeechSynthesisUtterance(response);
+                synth.speak(utterance);
+                status.textContent = 'Click the button and speak!';
+                startBtn.disabled = false;
+                // Refresh the page to update the log (simple approach)
+                setTimeout(() => location.reload(), 2000); // Reload after 2 seconds
+            });
+        };
+
+        recognition.onerror = (event) => {
+            status.textContent = 'Error occurred. Try again!';
+            startBtn.disabled = false;
+        };
+
+        recognition.onend = () => {
+            if (!startBtn.disabled) startBtn.disabled = false;
+        };
+    </script>
+</body>
+</html>

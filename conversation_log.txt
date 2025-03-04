@@ -1,0 +1,19 @@
+[2025-03-02 02:39:44]
+Query: hello. hello.
+Response: Hello there!  Is there anything I can help you with today?
+
+
+[2025-03-03 21:35:12]
+Query: hello, are you ready for this?
+Response: Yes, I'm ready.  Ask away!
+
+
+[2025-03-04 13:14:04]
+Query: what is 2 + 2
+Response: 2 + 2 = 4
+
+
+[2025-03-04 13:14:15]
+Query: what is time now
+Response: The current time is 01:14 PM.
+
